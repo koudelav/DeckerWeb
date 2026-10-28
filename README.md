@@ -33,3 +33,12 @@ npm run assets     # znovu převést grafiku a zvuky z ../DeckerSource (vyžaduj
 `tools/convert_assets.py` převádí BMP z `DefaultGraphics` a `RES` na PNG. Magenta `(255,0,255)`,
 kterou originál používá jako průhlednou barvu, se převádí na průhlednost. Názvy souborů
 zůstávají původní, aby šly dohledat v kódu originálu. Seznam je v `assets/manifest.json`.
+
+## Ukládání her
+
+- Hra se ukládá jako JSON (`src/core/game.ts`): postava, stav generátoru náhody a odchylky konfigurace pravidel.
+  Po načtení pokračuje stejná posloupnost náhody.
+- V prohlížeči do `localStorage` (`src/storage.ts`): pojmenované sloty + automatické uložení.
+  `localStorage` patří jednomu prohlížeči a může zmizet (anonymní okno, smazání dat) – proto export
+  do souboru `*.decker.json` a import zpět.
+- Původní savy z Decker 1.12 (`.dsg`, binární CArchive) se nenačítají.
