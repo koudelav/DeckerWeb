@@ -45,6 +45,8 @@ export const DEFAULT_CONFIG = {
   reputation: {
     /** Body na další úroveň = levelFactor × (L+1) × (L+2) / 2. */
     levelFactor: 5,
+    /** Strop reputace = (lifestyle + 1) × capPerLifestyle (MatrixView.cpp, CharDataDialog.cpp). */
+    capPerLifestyle: 4,
   },
 
   /** Global.cpp g_nLifestyleMonthlyCost, Global.h LIFESTYLE_UPGRADE_FACTOR */
@@ -104,6 +106,24 @@ export const DEFAULT_CONFIG = {
     deckConditionDivisor: 2,
   },
 
+  /** CharDataDialog.cpp – zvýšení dovednosti stojí tolik bodů, kolik je současná úroveň. */
+  skills: {
+    /** Cena zvýšení = úroveň × costPerLevel. */
+    costPerLevel: 1,
+  },
+
+  /** RestDlg.cpp – léčení fyzického zdraví */
+  rest: {
+    /** Léčení 1 bodu doma trvá tolik dní, kolik je chybějících bodů × homeDaysPerDamage. */
+    homeDaysPerDamage: 1,
+    /** Úplné vyléčení doma: dny = d × (d + fullHealOffset) / fullHealDivisor, d = chybějící body. */
+    fullHealOffset: 2,
+    fullHealDivisor: 3,
+    /** Nemocnice: čas / hospitalTimeDivisor (zaokrouhleno nahoru), cena = hospitalCostPerDay × domácí dny. */
+    hospitalTimeDivisor: 2,
+    hospitalCostPerDay: 100,
+  },
+
   /** Character.cpp PassTime */
   time: {
     daysPerWeek: 7,
@@ -135,6 +155,39 @@ export const DEFAULT_CONFIG = {
     maxLevel: [4, 5, 5, 3, 2, 5, 1, 3, 1],
     /** Cena = baseCost × 2^(úroveň−1). */
     baseCost: [1000, 500, 1000, 250, 500, 500, 2000, 2000, 1500],
+  },
+
+  /** Shop.cpp – výkup starého hardwaru při koupi lepšího */
+  shopTrade: {
+    /** Za starý hardware dostaneš cenu / hardwareResaleDivisor. */
+    hardwareResaleDivisor: 2,
+  },
+
+  /** OrderDlg.cpp – objednávka na zakázku */
+  order: {
+    /** Objednávka stojí priceMultiplier × běžná cena. */
+    priceMultiplier: 2,
+    /** Max. rating programů a čipů = maxRatingBase + maxRatingPerLifestyle × lifestyle. */
+    maxRatingBase: 6,
+    maxRatingPerLifestyle: 2,
+    /** Doba dodání podle ceny: cena < priceThresholds[i] → deliveryDays[i], jinak poslední hodnota. */
+    priceThresholds: [500, 1000, 5000, 10000, 50000],
+    deliveryDays: [2, 3, 4, 5, 6, 7],
+    /** Software se dodává o tolik dní dříve. */
+    softwareDaysFaster: 1,
+  },
+
+  /** NewProjectDlg.cpp, ProjectDataDlg.cpp – vývoj programů a čipů */
+  projects: {
+    /** Pracovní body nového ratingu = složitost × rating²; při upgradu se odečte už hotový zdroják. */
+    /** Při downgradu: složitost × (rating zdroje − cílový rating), nejméně minWork. */
+    minWork: 1,
+    /** Rychlost = dovednost × (1 + Design Assistant) bodů za den. */
+    /** Dokončení: hod proti cíli successBase + rating − (dovednost + Design Assistant). */
+    successBase: 10,
+    /** Při neúspěchu se pokračuje dalším kolem s prací = původní práce / failureWorkDivisor (nahoru). */
+    failureWorkDivisor: 4,
+    /** Vypalování čipu: práce = složitost čipu × rating, rychlost = úroveň Chip Burneru za den. */
   },
 
   /** Character.cpp GenerateShopItems, ShopItem.cpp Generate */
@@ -199,6 +252,13 @@ export const DEFAULT_CONFIG = {
     payDaysPivot: 3,
     payDaysDivisor: 10,
     payVariancePercent: 15,
+    /** Rating klientského programu (mise Run Program) = (číslo korporace + 4) / clientProgramRatingDivisor. */
+    clientProgramRatingDivisor: 5,
+    /**
+     * Nová funkce remasteru (To-Do originálu): zrušení přijatého kontraktu.
+     * Ztráta reputace = obtížnost × cancelRepPenaltyFactor (stejně jako při propadnutí termínu).
+     */
+    cancelRepPenaltyFactor: 1,
   },
 
   /** System.cpp Generate, Area.cpp GenerateArea */
