@@ -1,0 +1,66 @@
+// Vygenerováno skriptem tools/extract_tables.py z původních zdrojáků Decker 1.12.
+// © 2001 Shawn Overcash, GPL v2. Neupravovat ručně.
+
+/** Obsah cenných souborů (index = cílový objekt CT_*). DSFile.cpp */
+export const VALUABLE_FILE_CONTENTS: readonly string[] = ["Research data", "Chemical formulae", "Personnel files", "Financial data", "Grade reports", "Security files", "Security camera recordings", "Blueprints", "Employee evaluation records", "Product information", "Medical records", "Records of illegal activity", "Test results", "Inventory records"];
+
+/** Obsah bezcenných souborů. DSFile.cpp */
+export const USELESS_FILE_CONTENTS: readonly string[] = [
+  "Employee timesheets",
+  "Sales brochures",
+  "Employee mail",
+  "Someone's poetry attempts",
+  "A Christmas list",
+  "Office party supply list",
+  "Public service sign-up list",
+  "Recording of the big game",
+  "Garbage",
+  "To-do list",
+  "Outdated files",
+  "Wedding guest list",
+  "Bridal registry",
+  "Grocery list",
+  "Pictures of the family",
+  "Pictures from office party",
+  "Recordings from promotional event",
+  "Yesterday's news",
+  "Rejected ideas",
+  "Someone's budget",
+  "Garbled file",
+  "Country music recordings",
+  "Rock & Roll music recordings",
+  "Easy listening music recordings",
+  "Jazz music recordings",
+  "Recording of Superbowl LXXXII",
+  "Editorials",
+  "Company history",
+  "Educational media",
+  "Hardware manual",
+  "Software manual",
+  "Motivational video",
+  "A romance novel",
+  "A sci-fi novel",
+  "A mystery novel",
+  "A thriller novel",
+  "A romance holovid",
+  "A sci-fi holovid",
+  "A thriller holovid",
+  "An action holovid",
+  "A horror holovid",
+  "Pirate copy of Starcraft 7",
+  "A love letter",
+  "Hate mail",
+  "Joke of the day",
+  "Top 10 list",
+  "Letter to a relative",
+  "Phonebook",
+  "Travel brochures",
+  "Junk mail",
+  "Incomprehensible data",
+  "Ramblings of a lunatic",
+  "Recipe book",
+  "A family tree",
+];
+
+/** Výsledek skenu podle typu souboru. DSFile.cpp */
+export const FILE_SCAN_STRINGS: readonly string[] = ["Worthless", "Valuable", "*Passcode*", "*Clue*", "*Contract*", "*Program*", "*Source Code*", "*Source Code*"];

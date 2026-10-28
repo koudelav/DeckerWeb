@@ -9,7 +9,7 @@ odkaz do originálu (soubor, funkce) a případné starší varianty z originál
 
 | Kapitola | Stav |
 |---|---|
-| Kostky a úspěch | – |
+| [Kostky a úspěch](01-kostky-a-uspech.md) | hotovo (fáze 1) |
 | Postava a dovednosti | – |
 | Čas a lifestyle | – |
 | Programy | – |
