@@ -756,7 +756,7 @@
         48,
         16
       ],
-      "transparent": false
+      "transparent": true
     },
     "Junction_EW": {
       "size": [

@@ -16,9 +16,14 @@ from pathlib import Path
 from PIL import Image
 
 MAGENTA = (255, 0, 255)
+WHITE = (255, 255, 255)
+# Image listy, které originál vytváří s bílou maskou (ImageList Create(..., WHITE)):
+# Shop.cpp/ProjectDataDlg.cpp IDB_ITEM_IL, DeckDataDialog.cpp IDB_SOFTWARE_IL.
+WHITE_KEYED = {"ITEM_IL", "software_il"}
 
 
 def convert_bmp(src: Path, dst: Path) -> bool:
+    keys = {MAGENTA, WHITE} if src.stem in WHITE_KEYED else {MAGENTA}
     im = Image.open(src).convert("RGBA")
     px = im.load()
     w, h = im.size
@@ -26,7 +31,7 @@ def convert_bmp(src: Path, dst: Path) -> bool:
     for y in range(h):
         for x in range(w):
             r, g, b, _ = px[x, y]
-            if (r, g, b) == MAGENTA:
+            if (r, g, b) in keys:
                 px[x, y] = (0, 0, 0, 0)
                 keyed = True
     dst.parent.mkdir(parents=True, exist_ok=True)
