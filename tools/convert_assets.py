@@ -21,6 +21,9 @@ WHITE = (255, 255, 255)
 # Shop.cpp/ProjectDataDlg.cpp IDB_ITEM_IL, DeckDataDialog.cpp IDB_SOFTWARE_IL.
 WHITE_KEYED = {"ITEM_IL", "software_il"}
 GREY = (192, 192, 192)
+BLACK = (0, 0, 0)
+# Image listy s černou maskou: MapView.cpp (IDB_NODE_IL_*, IDB_IL_SPECIAL_NODES_*), NodeView.cpp (IDB_IL_MISC).
+BLACK_KEYED = {"Node_IL_16", "Node_IL_32", "il_special_nodes_16", "il_special_nodes_32", "il_misc"}
 # Logo na úvodu leželo na šedém pozadí dialogu Windows – v remasteru je pozadí průhledné
 # a kabely (v originálu barva masky) dostanou světlou barvu, aby byly vidět na tmavém panelu.
 GREY_KEYED = {"Title"}
@@ -28,7 +31,8 @@ TITLE_WIRE = (206, 214, 240)
 
 
 def convert_bmp(src: Path, dst: Path) -> bool:
-    keys = {MAGENTA, WHITE} if src.stem in WHITE_KEYED else {GREY} if src.stem in GREY_KEYED else {MAGENTA}
+    keys = ({MAGENTA, WHITE} if src.stem in WHITE_KEYED else {GREY} if src.stem in GREY_KEYED
+            else {MAGENTA, BLACK} if src.stem in BLACK_KEYED else {MAGENTA})
     im = Image.open(src).convert("RGBA")
     px = im.load()
     w, h = im.size

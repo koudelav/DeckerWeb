@@ -854,21 +854,21 @@
         120,
         24
       ],
-      "transparent": false
+      "transparent": true
     },
     "il_special_nodes_16": {
       "size": [
         96,
         16
       ],
-      "transparent": false
+      "transparent": true
     },
     "il_special_nodes_32": {
       "size": [
         192,
         32
       ],
-      "transparent": false
+      "transparent": true
     },
     "junction_NS": {
       "size": [

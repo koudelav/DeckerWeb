@@ -28,7 +28,7 @@ interface MatrixUi {
 }
 
 function mui(app: App): MatrixUi {
-  return (app.ui.matrix ??= { selectedProgram: null, fx: [], bigMap: false, busy: false }) as MatrixUi;
+  return (app.ui.matrix ??= { selectedProgram: null, fx: [], bigMap: true, busy: false }) as MatrixUi;
 }
 
 function runOf(app: App): Run {
@@ -544,20 +544,23 @@ export function renderMatrixScreen(app: App): HTMLElement {
   return h("div", { class: "matrix" },
     head,
     h("div", { class: "mgrid" },
-      progPanel,
-      center,
-      h("section", { class: "mpanel mright", "aria-label": "Map and status" },
-        h("div", { class: "panel-head" }, h("h2", null, "Map"),
-          h("button", { class: "quiet", onclick: () => { ui.bigMap = !ui.bigMap; app.render(); } }, ui.bigMap ? "Zoom out" : "Zoom in")),
-        renderMap(run, ui.bigMap),
-        bars,
+      h("div", { class: "mcol mcol-left" }, progPanel, filesPanel),
+      h("div", { class: "mcol mcol-center" },
+        center,
+        h("section", { class: "mpanel mcontrols", "aria-label": "Actions" },
+          pad,
+          h("div", null, quick, nodeButtons.length ? h("div", { class: "mquick mnode" }, nodeButtons) : null, sideButtons),
+        ),
       ),
-      h("section", { class: "mpanel mcontrols", "aria-label": "Actions" },
-        pad,
-        h("div", null, quick, nodeButtons.length ? h("div", { class: "mquick mnode" }, nodeButtons) : null, sideButtons),
+      h("div", { class: "mcol mcol-right" },
+        h("section", { class: "mpanel mright", "aria-label": "Map and status" },
+          h("div", { class: "panel-head" }, h("h2", null, "Map"),
+            h("button", { class: "quiet", onclick: () => { ui.bigMap = !ui.bigMap; app.render(); } }, ui.bigMap ? "Zoom out" : "Zoom in")),
+          renderMap(run, ui.bigMap),
+          bars,
+        ),
+        h("section", { class: "mpanel mlog-panel", "aria-label": "Message log" }, h("h2", null, "Messages"), log),
       ),
-      h("section", { class: "mpanel mlog-panel", "aria-label": "Message log" }, log),
-      filesPanel,
     ),
   );
 }

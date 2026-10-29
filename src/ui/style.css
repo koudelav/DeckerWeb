@@ -289,17 +289,24 @@ ul.plain { margin: 0; padding-left: 1.1em; }
 .blink { animation: blink 1s steps(2, start) infinite; }
 @keyframes blink { to { opacity: 0.35; } }
 
-.mgrid { display: grid; gap: 0.75rem; grid-template-columns: minmax(200px, 1fr) minmax(300px, 1.6fr) minmax(240px, 1.1fr);
-  grid-template-areas: "progs center right" "progs controls right" "log log files"; }
+.mgrid { display: grid; gap: 0.75rem; align-items: start;
+  grid-template-columns: minmax(200px, 1fr) minmax(300px, 1.6fr) minmax(260px, 1.15fr);
+  grid-template-areas: "left center right"; }
+.mcol { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+.mcol-left { grid-area: left; }
+.mcol-center { grid-area: center; }
+.mcol-right { grid-area: right; }
+/* Pravý sloupec (mapa, stav, zprávy) zůstává při posouvání na obrazovce a zprávy vyplní zbylou výšku. */
+@media (min-width: 721px) {
+  .mcol-right { position: sticky; top: 0.75rem; max-height: calc(100vh - 1.5rem); }
+  .mlog-panel { flex: 1 1 auto; min-height: 9rem; display: flex; flex-direction: column; }
+  .mlog-panel .mlog { flex: 1 1 auto; height: auto; min-height: 5rem; }
+}
 .mpanel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem; min-width: 0; }
 .mpanel h2 { font-size: 1rem; margin-bottom: 0.5em; }
-.mprograms { grid-area: progs; display: flex; flex-direction: column; }
-.mcenter { grid-area: center; }
-.mright { grid-area: right; }
-.mcontrols { grid-area: controls; display: grid; grid-template-columns: auto 1fr; gap: 0.75rem; align-items: start; }
-.mlog-panel { grid-area: log; }
-.mgrid > section:last-child { grid-area: files; }
-
+.mprograms { display: flex; flex-direction: column; }
+.mright { flex: none; }
+.mcontrols { display: grid; grid-template-columns: auto 1fr; gap: 0.75rem; align-items: start; }
 .mprogs { list-style: none; margin: 0 0 0.5rem; padding: 0; overflow-y: auto; max-height: 26rem; flex: 1; }
 .mprogs li { display: flex; align-items: center; gap: 0.5em; padding: 0.25em 0.4em; border-radius: 4px; cursor: pointer; font-size: 0.92rem; }
 .mprogs li:hover { background: var(--raised); }
@@ -322,7 +329,9 @@ ul.plain { margin: 0; padding-left: 1.1em; }
 .mpad .mbtn.dir img { width: 28px; height: 28px; }
 
 /* Pohled do nodu */
-.nodeview { position: relative; width: 100%; max-width: 480px; aspect-ratio: 1; margin: 0 auto; background: #000; overflow: hidden; border-radius: 4px; }
+.nodeview { position: relative; width: 100%; max-width: 480px;
+  /* v nízkém okně se pohled zmenší, aby pod ním zůstalo vidět ovládání */
+  max-width: clamp(240px, calc(100vh - 440px), 480px); aspect-ratio: 1; margin: 0 auto; background: #000; overflow: hidden; border-radius: 4px; }
 .nodeview-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .nodeview-line { position: absolute; }
 .nodeview .cell { position: absolute; width: 10%; height: 10%; margin: 0; padding: 0; border: 0; border-radius: 0; background-color: transparent; }
@@ -360,11 +369,11 @@ ul.plain { margin: 0; padding-left: 1.1em; }
 .mactive { margin: 0.3rem 0 0; }
 
 /* Mapa */
-.map-wrap { overflow: auto; height: 15rem; background: #000; border-radius: 4px; }
+.map-wrap { overflow: auto; height: 12rem; background: #000; border-radius: 4px; }
 .map-canvas { display: block; image-rendering: pixelated; }
 
 /* Zprávy */
-.mlog { height: 11rem; overflow-y: auto; font-size: 0.9rem; padding-right: 0.25rem; }
+.mlog { height: 12rem; overflow-y: auto; font-size: 0.9rem; padding-right: 0.25rem; }
 .mlog .msg { margin: 0 0 0.15em; max-width: none; }
 .msg.blue { color: var(--accent); }
 .msg.dkblue { color: var(--muted); }
@@ -381,14 +390,17 @@ ul.plain { margin: 0; padding-left: 1.1em; }
 ul.plain { list-style: none; padding: 0; margin: 0; }
 
 @media (max-width: 1100px) {
-  .mgrid { grid-template-columns: minmax(200px, 1fr) minmax(300px, 1.6fr); grid-template-areas: "center right" "controls controls" "progs log" "progs files"; }
+  .mgrid { grid-template-columns: minmax(300px, 1.5fr) minmax(260px, 1fr); grid-template-areas: "center right" "left left"; }
+  .mcol-left { flex-direction: row; flex-wrap: wrap; align-items: start; }
+  .mcol-left > * { flex: 1 1 16rem; }
 }
 @media (max-width: 720px) {
   .matrix { padding: 0.5rem; }
-  .mgrid { grid-template-columns: 1fr; grid-template-areas: "center" "controls" "right" "progs" "log" "files"; }
+  .mgrid { grid-template-columns: 1fr; grid-template-areas: "center" "right" "left"; }
   .mcontrols { grid-template-columns: 1fr; justify-items: center; }
   .mhead-contract { margin-left: 0; width: 100%; }
 }
+
 .dialog:has(.table-wrap) { width: min(60rem, calc(100vw - 2rem)); max-width: none; }
 .dialog .table td:first-child { white-space: nowrap; }
 
