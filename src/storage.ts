@@ -62,7 +62,7 @@ export function saveToSlot(game: Game, id: string | null, label?: string): strin
     });
     writeIndex(list);
   } catch (e) {
-    throw new SaveError(`Hru nejde uložit do prohlížeče: ${(e as Error).message}`);
+    throw new SaveError(`The game can't be saved in this browser: ${(e as Error).message}`);
   }
   return slotId;
 }
@@ -72,9 +72,9 @@ export function loadFromSlot(id: string): Game {
   try {
     raw = localStorage.getItem(PREFIX + "save:" + id);
   } catch {
-    throw new SaveError("Úložiště prohlížeče není dostupné.");
+    throw new SaveError("Browser storage isn't available.");
   }
-  if (!raw) throw new SaveError("Uložená hra nenalezena.");
+  if (!raw) throw new SaveError("The saved game was not found.");
   return Game.fromSave(JSON.parse(raw));
 }
 
@@ -94,9 +94,28 @@ export function exportFileName(data: SaveData): string {
 }
 
 /** Stáhne uloženou hru jako soubor. */
-export function exportGame(game: Game): void {
+interface DownloadsNs { save(r: { filename: string; data: string | Blob }): Promise<unknown> }
+interface ClaudeRuntime { use(name: "downloads"): Promise<DownloadsNs | null> }
+
+/**
+ * Stáhne save jako soubor. V artefaktu na claude.ai přes schopnost `downloads` (prohlížeč se zeptá),
+ * jinde přes odkaz ke stažení. Vrací "saved", "declined" nebo "unavailable".
+ */
+export async function exportGame(game: Game): Promise<"saved" | "declined" | "unavailable"> {
   const data = game.toSave();
-  const blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" });
+  const text = JSON.stringify(data, null, 1);
+  const claude = (window as unknown as { claude?: ClaudeRuntime }).claude;
+  if (claude?.use) {
+    const downloads = await claude.use("downloads").catch(() => null);
+    if (!downloads) return "unavailable";
+    try {
+      await downloads.save({ filename: exportFileName(data), data: text });
+      return "saved";
+    } catch (e) {
+      return (e as { code?: string }).code === "declined" ? "declined" : "unavailable";
+    }
+  }
+  const blob = new Blob([text], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -105,15 +124,26 @@ export function exportGame(game: Game): void {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return "saved";
+}
+
+/** Save jako text (kopírování tam, kde prohlížeč nedovolí stahovat soubory – např. v artefaktu). */
+export function saveCode(game: Game): string {
+  return JSON.stringify(game.toSave());
 }
 
 /** Načte hru ze souboru (export). */
 export async function importGame(file: File): Promise<Game> {
+  return importGameText(await file.text());
+}
+
+/** Načte hru z textu savu (soubor nebo vložený kód). */
+export function importGameText(text: string): Game {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(await file.text());
+    parsed = JSON.parse(text.trim());
   } catch {
-    throw new SaveError("Soubor není platný JSON.");
+    throw new SaveError("This is not a Decker save: the text isn't valid JSON.");
   }
   validateSave(parsed);
   return Game.fromSave(parsed);

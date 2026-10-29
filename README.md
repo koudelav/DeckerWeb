@@ -26,6 +26,8 @@ npm run dev        # vývojový server
 npm test           # testy
 npm run build      # build do dist/index.html (jedna samostatná stránka)
 npm run assets     # znovu převést grafiku a zvuky z ../DeckerSource (vyžaduje Python + Pillow)
+python3 tools/convert_help.py   # znovu převést nápovědu ../DeckerSource/Help/Decker.rtf do src/ui/help/content.ts
+npm run artifact   # build + dist/decker-artifact.html pro publikaci jako artefakt na claude.ai
 ```
 
 ## Assety

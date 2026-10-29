@@ -19,10 +19,12 @@ export interface App {
   game: Game | null;
   /** Výběry a rozpracované formuláře jednotlivých sekcí (nepatří do savu). */
   ui: Record<string, unknown>;
+  /** Slot, do kterého se naposledy ukládalo / ze kterého se načítalo (rychlé uložení Ctrl+S, Ctrl+L). */
+  slotId: string | null;
   render(): void;
   go(screen: Screen): void;
   show(view: View): void;
-  startGame(game: Game): void;
+  startGame(game: Game, slotId?: string | null): void;
   /** Provede akci nad hrou: chybu ukáže jako hlášku, pak uloží a překreslí. */
   act(fn: () => void | string | Promise<void | string>): Promise<void>;
   /** Zobrazí události z plynutí času (nájem, nový týden, hotový čip…). Vrací false při konci hry. */
@@ -30,6 +32,8 @@ export interface App {
   /** Automatické uložení (po každé akci). */
   save(): void;
 }
+
+import { bindHelpKey } from "./help/help";
 
 const root = () => document.querySelector<HTMLDivElement>("#app")!;
 
@@ -39,6 +43,7 @@ export function createApp(): App {
     view: "character",
     game: null,
     ui: {},
+    slotId: null,
     render() {
       const r = root();
       const scrollY = window.scrollY;
@@ -61,8 +66,9 @@ export function createApp(): App {
       app.render();
       root().querySelector<HTMLElement>(".view h1")?.focus({ preventScroll: true });
     },
-    startGame(game) {
+    startGame(game, slotId = null) {
       app.game = game;
+      app.slotId = slotId;
       app.ui = {};
       app.view = "character";
       app.screen = game.run ? "matrix" : "home";
@@ -94,6 +100,7 @@ export function createApp(): App {
       return true;
     },
   };
+  bindHelpKey(app);
   return app;
 }
 

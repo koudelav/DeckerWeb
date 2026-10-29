@@ -1,10 +1,10 @@
 // Nastavení a ukládání (COptionsDlg).
-import { AUTOSAVE_ID, exportGame, listSaves, saveToSlot, storageAvailable } from "../../storage";
+import { AUTOSAVE_ID, listSaves, saveToSlot, storageAvailable } from "../../storage";
 import type { App } from "../app";
 import { h } from "../dom";
 import { confirmDialog, message, promptText } from "../modal";
 import { setSoundEnabled, soundEnabled } from "../sound";
-import { importButton, saveList } from "./saves";
+import { exportDialog, importButton, pasteButton, saveList } from "./saves";
 import { viewTitle } from "./home";
 
 export function renderOptions(app: App): HTMLElement {
@@ -18,7 +18,7 @@ export function renderOptions(app: App): HTMLElement {
     const existing = listSaves().find((s) => s.label === name && s.id !== AUTOSAVE_ID);
     if (existing && !(await confirmDialog(`Overwrite the save "${name}"?`))) return;
     try {
-      saveToSlot(g, existing?.id ?? null, name);
+      app.slotId = saveToSlot(g, existing?.id ?? null, name);
       await message("The game has been saved.");
     } catch (e) {
       await message((e as Error).message);
@@ -33,8 +33,9 @@ export function renderOptions(app: App): HTMLElement {
         h("p", { class: "muted" }, "Games are kept in this browser and saved automatically after every action. Export a file now and then: browser storage can be cleared."),
         h("div", { class: "button-row" },
           h("button", { class: "primary", disabled: !storageAvailable(), onclick: () => void save() }, "Save game"),
-          h("button", { onclick: () => exportGame(g) }, "Export to file"),
+          h("button", { onclick: () => void exportDialog(g) }, "Export"),
           importButton(app, { confirmLoad: true }),
+          pasteButton(app, { confirmLoad: true }),
         ),
         saveList(app, { confirmLoad: true }),
       ),

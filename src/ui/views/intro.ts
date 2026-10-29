@@ -1,8 +1,9 @@
 // Úvodní obrazovka (IntroDlg).
+import { openHelp } from "../help/help";
 import type { App } from "../app";
 import { h } from "../dom";
 import { pixelImg } from "../sprites";
-import { importButton, saveList } from "./saves";
+import { importButton, pasteButton, saveList } from "./saves";
 
 export function renderIntro(app: App): HTMLElement {
   return h("main", { class: "intro" },
@@ -13,6 +14,8 @@ export function renderIntro(app: App): HTMLElement {
     h("div", { class: "intro-actions" },
       h("button", { class: "primary big", onclick: () => app.go("newChar") }, "New game"),
       importButton(app, { confirmLoad: false }),
+      pasteButton(app, { confirmLoad: false }),
+      h("button", { class: "button", onclick: () => openHelp("Decker_Intro") }, "How to play"),
     ),
     h("section", { class: "intro-saves", "aria-labelledby": "saves-h" },
       h("h2", { id: "saves-h" }, "Continue a saved game"),

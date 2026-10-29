@@ -35,10 +35,10 @@ describe("save do JSON", () => {
   it("odmítne cizí nebo poškozený soubor", () => {
     expect(() => validateSave({ foo: 1 })).toThrow(SaveError);
     const s = Game.newGame(opts, 1).toSave();
-    expect(() => validateSave({ ...s, version: 999 })).toThrow(/novější/);
+    expect(() => validateSave({ ...s, version: 999 })).toThrow(/newer version/);
     expect(() => validateSave({ ...s, rng: [1, 2] })).toThrow(SaveError);
-    expect(() => validateSave({ ...s, character: { name: "x" } })).toThrow(/neúplná/);
-    expect(() => validateSave({ ...s, configOverrides: { nesmysl: 1 } })).toThrow(/neznámé/);
+    expect(() => validateSave({ ...s, character: { name: "x" } })).toThrow(/incomplete/);
+    expect(() => validateSave({ ...s, configOverrides: { nesmysl: 1 } })).toThrow(/unknown rule settings/);
   });
 });
 

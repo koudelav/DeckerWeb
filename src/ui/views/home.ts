@@ -1,4 +1,5 @@
 // Domovská obrazovka (HomeView): readout decku, lišta sekcí, obsah sekce.
+import { contextTopic, openHelp } from "../help/help";
 import { lifestyleName, repCap } from "../../core/character";
 import { REP_LEVEL_NAMES } from "../../core/data/texts";
 import { formatDate } from "../../core/character";
@@ -38,7 +39,7 @@ export function renderHome(app: App): HTMLElement {
       if (app.screen !== "home" || e.ctrlKey || e.metaKey || e.altKey) return;
       if (document.querySelector("dialog[open]")) return;
       const t = e.target as HTMLElement;
-      if (t.closest("input, select, textarea")) return;
+      if (t.closest("input, select, textarea") || document.querySelector("dialog[open]")) return;
       const n = Number(e.key);
       if (n >= 1 && n <= SECTIONS.length) {
         e.preventDefault();
@@ -84,6 +85,8 @@ export function renderHome(app: App): HTMLElement {
       title: `${s.label} (${i + 1})`,
       onclick: () => app.show(s.view),
     }, pixelImg(s.icon, 2), h("span", null, s.label))),
+    h("button", { class: "rail-item rail-help", title: "Help (F1)", onclick: () => openHelp(contextTopic(app)) },
+      h("span", { class: "rail-help-icon", "aria-hidden": "true" }, "?"), h("span", null, "Help")),
   );
   const views: Record<View, (a: App) => HTMLElement> = {
     character: renderCharacter, deck: renderDeck, contracts: renderContracts, shop: renderShop,

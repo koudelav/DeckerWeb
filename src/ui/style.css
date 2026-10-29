@@ -373,3 +373,36 @@ ul.plain { list-style: none; padding: 0; margin: 0; }
   .mcontrols { grid-template-columns: 1fr; justify-items: center; }
   .mhead-contract { margin-left: 0; width: 100%; }
 }
+.dialog:has(.table-wrap) { width: min(60rem, calc(100vw - 2rem)); max-width: none; }
+.dialog .table td:first-child { white-space: nowrap; }
+
+/* Nápověda */
+.help-dialog { width: min(64rem, calc(100vw - 2rem)); max-width: none; height: min(48rem, calc(100vh - 2rem)); padding: 0; display: flex; flex-direction: column; }
+.help-dialog:not([open]) { display: none; }
+.help-head { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--line); }
+.help-head .dialog-title { margin: 0; }
+.help-body { display: grid; grid-template-columns: 15rem 1fr; flex: 1; min-height: 0; }
+.help-toc { overflow-y: auto; padding: 0.75rem 0.5rem 1rem 1rem; border-right: 1px solid var(--line); font-size: 0.9rem; display: flex; flex-direction: column; }
+.help-toc a, .help-toc span { padding: 0.2em 0.5em; border-radius: 4px; }
+.help-toc a { color: var(--text); text-decoration: none; }
+.help-toc a:hover { background: var(--raised); }
+.help-toc a[aria-current="page"] { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.help-toc .help-group { font-family: var(--display); font-weight: 600; color: var(--muted); margin-top: 0.5em; }
+.help-toc .lvl2 { padding-left: 1em; }
+.help-toc .lvl3 { padding-left: 1.75em; }
+.help-toc .help-group.lvl1 { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.78rem; }
+.help-article { overflow-y: auto; padding: 1rem 1.5rem 2rem; outline: none; }
+.help-article h1 { font-size: 1.4rem; }
+.help-article h3 { font-family: var(--display); font-size: 1.02rem; margin: 1.2em 0 0.4em; }
+.help-article a { color: var(--accent); }
+.help-article table { border-collapse: collapse; margin: 0 0 1em; font-size: 0.92rem; width: 100%; }
+.help-article th, .help-article td { text-align: left; vertical-align: top; padding: 0.4em 0.5em; border-bottom: 1px solid var(--line); }
+.help-article th { color: var(--muted); font-size: 0.85rem; }
+.help-note { border-top: 1px solid var(--line); padding-top: 0.75em; margin-top: 1.5em; }
+.rail-help-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; font: 700 1.1rem var(--display); color: var(--accent); border: 2px solid var(--accent); border-radius: 50%; }
+@media (max-width: 720px) {
+  .help-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .help-toc { max-height: 9rem; border-right: 0; border-bottom: 1px solid var(--line); }
+}
+.save-code { width: 100%; font: 0.8rem/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--raised); color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 0.5em; resize: vertical; word-break: break-all; }
+.dialog-actions [role="status"] { margin-right: auto; align-self: center; }

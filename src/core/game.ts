@@ -87,27 +87,27 @@ export class SaveError extends Error {}
 
 /** Kontrola a případná migrace načteného savu. */
 export function validateSave(data: unknown): SaveData {
-  if (typeof data !== "object" || data === null) throw new SaveError("Soubor neobsahuje uloženou hru.");
+  if (typeof data !== "object" || data === null) throw new SaveError("This doesn't contain a saved game.");
   const d = data as Partial<SaveData>;
-  if (d.format !== SAVE_FORMAT) throw new SaveError("Soubor není uložená hra Decker Remaster.");
+  if (d.format !== SAVE_FORMAT) throw new SaveError("This is not a Decker Remaster save.");
   if (typeof d.version !== "number" || d.version > SAVE_VERSION) {
-    throw new SaveError("Uložená hra je z novější verze remasteru.");
+    throw new SaveError("This save comes from a newer version of the remaster.");
   }
   if (!Array.isArray(d.rng) || d.rng.length !== 4 || !d.rng.every((v) => Number.isInteger(v))) {
-    throw new SaveError("Poškozený save: chybí stav generátoru náhody.");
+    throw new SaveError("The save is damaged: the random generator state is missing.");
   }
   const ch = d.character as Partial<Character> | undefined;
   const required: (keyof Character)[] = [
     "name", "credits", "lifestyle", "skills", "chips", "hardware", "software", "contracts", "shop", "date", "health", "nextId",
   ];
   if (!ch || typeof ch !== "object" || required.some((k) => ch[k] === undefined)) {
-    throw new SaveError("Poškozený save: neúplná postava.");
+    throw new SaveError("The save is damaged: the character is incomplete.");
   }
   // Kontrola, že odchylky konfigurace odpovídají známým parametrům (buildConfig hlásí neznámé)
   try {
     buildConfig((d.configOverrides ?? {}) as ConfigOverrides);
   } catch (e) {
-    throw new SaveError(`Save obsahuje neznámé parametry pravidel: ${(e as Error).message}`);
+    throw new SaveError(`The save contains unknown rule settings: ${(e as Error).message}`);
   }
   return {
     format: SAVE_FORMAT,

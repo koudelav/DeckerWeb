@@ -8,13 +8,15 @@ import type { DSFile } from "../../core/matrix/types";
 import { DumpCause, type FileOp, type Run, type RunFx, type RunOutput } from "../../core/matrix/run";
 import { programClassName, programSize, softwareText } from "../../core/program";
 import { loadRatings } from "../../core/character";
-import { saveToSlot, exportGame, AUTOSAVE_ID, deleteSlot } from "../../storage";
+import { exportDialog } from "../views/saves";
+import { saveToSlot, AUTOSAVE_ID, deleteSlot, listSaves, loadFromSlot } from "../../storage";
 import type { App } from "../app";
 import { credits, h } from "../dom";
 import { confirmDialog, message, openDialog, promptText } from "../modal";
 import { playSound, setSoundEnabled, soundEnabled } from "../sound";
 import { STRIPS, sprite } from "../sprites";
 import { renderMap, renderNodeView } from "./views";
+import { openHelp } from "../help/help";
 import { FILE_SPECIAL_CONTENT } from "../../core/data/texts";
 import { USELESS_FILE_CONTENTS, VALUABLE_FILE_CONTENTS } from "../../core/data/fileContents";
 
@@ -306,7 +308,7 @@ async function optionsDialog(app: App): Promise<void> {
   const choice = await openDialog<"save" | "export" | "sound" | null>("Options", (close) => [
     h("div", { class: "button-row" },
       h("button", { class: "primary", disabled: ironRun, onclick: () => close("save") }, "Save game"),
-      h("button", { onclick: () => close("export") }, "Export to file"),
+      h("button", { onclick: () => close("export") }, "Export"),
       h("button", { onclick: () => close("sound") }, soundEnabled() ? "Turn sound off" : "Turn sound on"),
     ),
     h("div", null, ironRun ? h("p", { class: "muted" }, "Ironmen don't need to save in the matrix.") : null),
@@ -317,14 +319,15 @@ async function optionsDialog(app: App): Promise<void> {
     const name = await promptText("Save game", "Name of the save", g.character.name);
     if (name) {
       try {
-        saveToSlot(g, null, name);
+        const existing = listSaves().find((x) => x.label === name && x.id !== AUTOSAVE_ID);
+        app.slotId = saveToSlot(g, existing?.id ?? null, name);
         runOf(app).msg("Game has been saved.", "blue");
       } catch (e) {
         await message((e as Error).message);
       }
     }
   } else if (choice === "export") {
-    exportGame(g);
+    await exportDialog(g);
   } else if (choice === "sound") {
     setSoundEnabled(!soundEnabled());
   }
@@ -516,6 +519,7 @@ export function renderMatrixScreen(app: App): HTMLElement {
     btn("Character", null, "MATRIX_Char0", true, () => void characterDialog(app)),
     btn("Contract", null, "MATRIX_Contract0", true, () => void contractDialog(app)),
     btn("Options", null, "MATRIX_Options0", true, () => void optionsDialog(app)),
+    btn("Help", "F1", null, true, () => openHelp("HID_MATRIX")),
     btn("Disconnect", null, "MATRIX_Disconnect0", true, async () => {
       if (await confirmDialog("Are you sure you wish to disconnect?")) void act(app, (r) => r.disconnect());
     }, "danger"),
@@ -567,6 +571,49 @@ function imageUrl(name: string): string {
 // Klávesy (akcelerátory originálu IDR_MATRIX_ACC)
 // ---------------------------------------------------------------------------
 
+/** OnQuickSave (Ctrl+S): uloží do naposledy použitého slotu, jinak se zeptá na název. */
+async function quickSave(app: App): Promise<void> {
+  const g = app.game!;
+  if (g.character.ironMan) {
+    await message("Ironmen don't need to save in the matrix.");
+    return;
+  }
+  let id = app.slotId;
+  let label = id ? listSaves().find((x) => x.id === id)?.label : undefined;
+  if (!id || !label) {
+    const name = await promptText("Save game", "Name of the save", g.character.name);
+    if (!name) return;
+    label = name;
+    id = listSaves().find((x) => x.label === name && x.id !== AUTOSAVE_ID)?.id ?? null;
+  }
+  try {
+    app.slotId = saveToSlot(g, id, label);
+    runOf(app).msg("Game has been saved.", "blue");
+  } catch (e) {
+    await message((e as Error).message);
+  }
+  app.render();
+}
+
+/** OnQuickLoad (Ctrl+L): načte naposledy použitý slot. */
+async function quickLoad(app: App): Promise<void> {
+  const id = app.slotId;
+  if (!id || !listSaves().some((x) => x.id === id)) {
+    await message("There is no saved game to load yet. Save the game first (Ctrl+S).");
+    return;
+  }
+  try {
+    const game = loadFromSlot(id);
+    app.startGame(game, id);
+    if (game.run) {
+      game.run.msg("Game has been loaded.", "blue");
+      app.render();
+    }
+  } catch (e) {
+    await message((e as Error).message);
+  }
+}
+
 let keysBound = false;
 let appRef: App | null = null;
 
@@ -579,6 +626,11 @@ function bindKeys(app: App): void {
     if (!a || a.screen !== "matrix" || !a.game?.run || a.game.run.ended) return;
     if (document.querySelector("dialog[open]")) return;
     if ((e.target as HTMLElement).closest("input, select, textarea")) return;
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === "s" || e.key === "l")) {
+      e.preventDefault();
+      void (e.key === "s" ? quickSave(a) : quickLoad(a));
+      return;
+    }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const run = a.game.run;
     const c = run.controls();

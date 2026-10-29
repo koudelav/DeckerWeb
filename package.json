@@ -1,7 +1,7 @@
 {
   "name": "decker-ts",
   "version": "0.0.1",
-  "description": "Remaster hry Decker 1.12 (Shawn Overcash, 2001) v TypeScriptu pro prohlížeč",
+  "description": "Remaster hry Decker 1.12 (Shawn Overcash, 2001) v TypeScriptu pro prohl\u00ed\u017ee\u010d",
   "private": true,
   "license": "GPL-2.0-or-later",
   "type": "module",
@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "assets": "python3 tools/convert_assets.py ../DeckerSource assets"
+    "assets": "python3 tools/convert_assets.py ../DeckerSource assets",
+    "artifact": "vite build && node tools/artifact.mjs"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
