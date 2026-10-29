@@ -20,10 +20,15 @@ WHITE = (255, 255, 255)
 # Image listy, které originál vytváří s bílou maskou (ImageList Create(..., WHITE)):
 # Shop.cpp/ProjectDataDlg.cpp IDB_ITEM_IL, DeckDataDialog.cpp IDB_SOFTWARE_IL.
 WHITE_KEYED = {"ITEM_IL", "software_il"}
+GREY = (192, 192, 192)
+# Logo na úvodu leželo na šedém pozadí dialogu Windows – v remasteru je pozadí průhledné
+# a kabely (v originálu barva masky) dostanou světlou barvu, aby byly vidět na tmavém panelu.
+GREY_KEYED = {"Title"}
+TITLE_WIRE = (206, 214, 240)
 
 
 def convert_bmp(src: Path, dst: Path) -> bool:
-    keys = {MAGENTA, WHITE} if src.stem in WHITE_KEYED else {MAGENTA}
+    keys = {MAGENTA, WHITE} if src.stem in WHITE_KEYED else {GREY} if src.stem in GREY_KEYED else {MAGENTA}
     im = Image.open(src).convert("RGBA")
     px = im.load()
     w, h = im.size
@@ -31,7 +36,9 @@ def convert_bmp(src: Path, dst: Path) -> bool:
     for y in range(h):
         for x in range(w):
             r, g, b, _ = px[x, y]
-            if (r, g, b) in keys:
+            if src.stem in GREY_KEYED and (r, g, b) == MAGENTA:
+                px[x, y] = TITLE_WIRE + (255,)
+            elif (r, g, b) in keys:
                 px[x, y] = (0, 0, 0, 0)
                 keyed = True
     dst.parent.mkdir(parents=True, exist_ok=True)

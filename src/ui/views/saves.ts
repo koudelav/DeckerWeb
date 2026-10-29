@@ -85,7 +85,7 @@ export function pasteButton(app: App, opts: { confirmLoad: boolean }): HTMLEleme
       await message((e as Error).message);
     }
   };
-  return h("button", { onclick: () => void run() }, "Paste save code");
+  return h("button", { class: "button", onclick: () => void run() }, "Paste save code");
 }
 
 /** Export: soubor ke stažení, nebo text ke zkopírování (stahování může prohlížeč zablokovat). */

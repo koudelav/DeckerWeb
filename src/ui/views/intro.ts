@@ -8,7 +8,7 @@ import { importButton, pasteButton, saveList } from "./saves";
 export function renderIntro(app: App): HTMLElement {
   return h("main", { class: "intro" },
     h("div", { class: "intro-title" },
-      pixelImg("Title", 3, "Decker"),
+      h("div", { class: "intro-logo" }, pixelImg("Title", 3, "Decker")),
       h("p", { class: "intro-sub" }, "A cyberspace RPG. Remaster of version 1.12."),
     ),
     h("div", { class: "intro-actions" },

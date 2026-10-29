@@ -19,6 +19,10 @@
   --display: "Chakra Petch", "Segoe UI", sans-serif;
   --body: "Barlow", "Segoe UI", system-ui, sans-serif;
   --radius: 6px;
+  /* panel „obrazovky“ s logem – stejný v obou motivech */
+  --screen-glow: #2a3dbb; --screen-mid: #141d52; --screen-deep: #0a0f2e; --screen-edge: #3a4cc8;
+  --screen-shadow: rgb(10 15 50 / 0.3); --screen-scan: rgb(255 255 255 / 0.035);
+  --screen-rim: #8ea0ff; --screen-halo: rgb(84 112 255 / 0.5);
   color-scheme: light;
 }
 
@@ -140,7 +144,16 @@ ul.plain { margin: 0; padding-left: 1.1em; }
 /* Úvod */
 .intro { max-width: 40rem; margin: 0 auto; padding: 3rem 16px 2rem; }
 .intro-title { margin-bottom: 2rem; }
-.intro-title img { max-width: 100%; height: auto; display: block; }
+.intro-logo {
+  position: relative; overflow: hidden; display: grid; place-items: center;
+  padding: 1.5rem 1.75rem; border-radius: 8px;
+  background: radial-gradient(120% 140% at 50% 0%, var(--screen-glow) 0%, var(--screen-mid) 55%, var(--screen-deep) 100%);
+  box-shadow: inset 0 0 0 1px var(--screen-edge), 0 8px 30px var(--screen-shadow);
+}
+.intro-logo::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, var(--screen-scan) 0 1px, transparent 1px 3px); }
+.intro-logo img { width: 471px; max-width: 100%; height: auto; display: block;
+  filter: drop-shadow(0 0 1px var(--screen-rim)) drop-shadow(0 0 12px var(--screen-halo)); }
 .intro-sub { font-family: var(--display); font-size: 1.15rem; color: var(--muted); margin-top: 0.8em; }
 .intro-actions { display: flex; flex-wrap: wrap; gap: 0.75em; align-items: center; margin-bottom: 2.5rem; }
 .intro-actions .button { padding: 0.7em 1.2em; font-size: 1rem; }
@@ -406,3 +419,16 @@ ul.plain { list-style: none; padding: 0; margin: 0; }
 }
 .save-code { width: 100%; font: 0.8rem/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--raised); color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 0.5em; resize: vertical; word-break: break-all; }
 .dialog-actions [role="status"] { margin-right: auto; align-self: center; }
+
+/* Výběr s ikonami */
+.iselect { position: relative; min-width: 0; }
+.iselect-button { width: 100%; display: flex; align-items: center; gap: 0.5em; text-align: left; background: var(--panel); padding: 0.45em 0.6em; border-radius: 4px; font-weight: 400; }
+.iselect-button > span:not(.sprite):not(.iselect-caret) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.iselect-caret { color: var(--muted); }
+.iselect-list { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 0.25rem; list-style: none;
+  max-height: 18rem; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: 0 10px 30px rgb(8 12 40 / 0.3); min-width: 12rem; }
+.iselect-list:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.iselect-list li { display: flex; align-items: center; gap: 0.6em; padding: 0.35em 0.5em; border-radius: 4px; cursor: pointer; }
+.iselect-list li.active { background: var(--raised); }
+.iselect-list li[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--accent); font-weight: 600; }

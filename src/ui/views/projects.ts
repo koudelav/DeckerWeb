@@ -11,6 +11,7 @@ import type { Source } from "../../core/state";
 import { actionButton, type App } from "../app";
 import { h, plural } from "../dom";
 import { confirmDialog, message, openDialog } from "../modal";
+import { iconSelect } from "../iconselect";
 import { STRIPS, sprite } from "../sprites";
 import { viewTitle } from "./home";
 
@@ -70,10 +71,22 @@ function renderNewProject(app: App): HTMLElement {
   return h("div", { class: "panel" },
     h("h2", null, "New project"),
     h("div", { class: "form-row" },
-      select("Type", d.type, [{ v: ItemType.Software, t: "Program" }, { v: ItemType.Chip, t: "Chip" }], (v) => {
-        d.type = v as ProjectType; d.cls = 0; d.rating = maxProjectRating(ch, d.type);
-      }, "proj-type"),
-      select("Class", d.cls, projectClasses(d.type).map((c) => ({ v: c, t: name(c) })), (v) => (d.cls = v), "proj-cls"),
+      iconSelect({
+        label: "Type", value: d.type, focusKey: "proj-type",
+        options: [
+          { value: ItemType.Software, text: "Program", icon: () => sprite(STRIPS.items, ItemType.Software, 1) },
+          { value: ItemType.Chip, text: "Chip", icon: () => sprite(STRIPS.items, ItemType.Chip, 1) },
+        ],
+        onChange: (v) => { d.type = v as ProjectType; d.cls = 0; d.rating = maxProjectRating(ch, d.type); app.render(); },
+      }),
+      iconSelect({
+        label: "Class", value: d.cls, focusKey: "proj-cls",
+        options: projectClasses(d.type).map((c) => ({
+          value: c, text: name(c),
+          icon: () => d.type === ItemType.Software ? sprite(STRIPS.software, c, 1) : sprite(STRIPS.items, ItemType.Chip, 1),
+        })),
+        onChange: (v) => { d.cls = v; app.render(); },
+      }),
       select("Rating", d.rating, Array.from({ length: max }, (_, i) => ({ v: i + 1, t: String(i + 1) })), (v) => (d.rating = v), "proj-rating"),
     ),
     h("p", { class: "muted" },
