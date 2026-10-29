@@ -7,6 +7,7 @@ import type { Ctx } from "./context";
 import { createNewCharacter, type NewCharacterOptions } from "./character";
 import { Rng, type RngState } from "./rng";
 import type { Character } from "./state";
+import { Run, startRun, type RunState } from "./matrix/run";
 
 export const SAVE_FORMAT = "decker-remaster-save";
 export const SAVE_VERSION = 1;
@@ -22,8 +23,8 @@ export interface SaveData {
   /** Odchylky od výchozí konfigurace, se kterými hra běží (zatím obvykle prázdné). */
   configOverrides: ConfigOverrides;
   character: Character;
-  /** Stav probíhajícího runu v Matrixu (fáze 5). */
-  run: null;
+  /** Stav probíhajícího runu v Matrixu (null = hráč je doma). */
+  run: RunState | null;
 }
 
 export class Game implements Ctx {
@@ -31,6 +32,8 @@ export class Game implements Ctx {
   readonly rng: Rng;
   readonly overrides: ConfigOverrides;
   character: Character;
+  /** Probíhající run v Matrixu. */
+  run: Run | null = null;
 
   private constructor(character: Character, rng: Rng, overrides: ConfigOverrides) {
     this.overrides = overrides;
@@ -56,13 +59,27 @@ export class Game implements Ctx {
       rng: this.rng.getState(),
       configOverrides: structuredClone(this.overrides) as ConfigOverrides,
       character: structuredClone(this.character),
-      run: null,
+      run: this.run ? structuredClone(this.run.s) : null,
     };
+  }
+
+  /** Vstup do Matrixu (HomeView OnMatrix). */
+  jackIn(useBackdoor: boolean): Run {
+    this.run = startRun(this, this.character, useBackdoor);
+    return this.run;
+  }
+
+  /** Po zobrazení výsledků runu: zpět domů. */
+  leaveMatrix(): void {
+    this.run = null;
   }
 
   static fromSave(data: unknown): Game {
     const save = validateSave(data);
-    return new Game(structuredClone(save.character), new Rng(save.rng), save.configOverrides);
+    const game = new Game(structuredClone(save.character), new Rng(save.rng), save.configOverrides);
+    if (save.run && !save.run.end) game.run = new Run(game, game.character, structuredClone(save.run));
+    else game.character.onRun = false;
+    return game;
   }
 }
 
@@ -100,6 +117,6 @@ export function validateSave(data: unknown): SaveData {
     rng: d.rng as RngState,
     configOverrides: (d.configOverrides ?? {}) as ConfigOverrides,
     character: ch as Character,
-    run: null,
+    run: (d.run && typeof d.run === "object" && "system" in d.run ? d.run : null) as RunState | null,
   };
 }

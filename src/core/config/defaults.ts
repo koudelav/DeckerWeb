@@ -336,6 +336,117 @@ export const DEFAULT_CONFIG = {
     weakenPenalty: 4,
   },
 
+  /**
+   * Pravidla runu v Matrixu. MatrixView.cpp, Ice.cpp. Kuchařka: kapitoly 10–12.
+   * Cílová čísla (TN) mají tvar: base + sysMult × rating systému + rating ICE − (rating postavy + rating programu).
+   */
+  matrix: {
+    /** Programy proti ICE (DoRunProgramVsIce). */
+    attackBase: 10,
+    /** Násobek ratingu systému v cílových číslech programů proti ICE. */
+    sysMult: 2,
+    /** Attack proti hardened/phasing ICE. */
+    attackArmoredPenalty: 3,
+    /** Area Attack: proti hardened +6 a poloviční poškození; proti phasing 0; jinak +2. */
+    areaHardenedPenalty: 6,
+    areaNormalPenalty: 2,
+    /** Piercing Attack: proti phasing +6 a poloviční poškození; proti hardened 0; jinak −3 a poloviční poškození. */
+    piercingPhasingPenalty: 6,
+    piercingNormalBonus: 3,
+    /** Slow, Virus, Confuse, Weaken: trvání = úspěch × effectTurnsPerSuccess tahů. */
+    effectTurnsPerSuccess: 4,
+    /** Hide proti senzorům ICE; postih, když jsou aktivní návnady. */
+    hideBase: 10,
+    hideDecoyPenalty: 4,
+    /** Deceive proti senzorům; passcode soubor dává bonus. */
+    deceiveBase: 10,
+    deceivePasscodeBonus: 4,
+    relocateBase: 10,
+    /** Analyze: cíl base + 2×rating + rating ICE − (analýza + program); úroveň analýzy = úspěch (20 % za stupeň). */
+    analyzeBase: 8,
+    /** Decrypt (jen tapeworm); passcode bonus; při neúspěchu hod na všimnutí s nižším základem. */
+    decryptBase: 10,
+    decryptPasscodeBonus: 2,
+    decryptNoticeBase: 8,
+    /** Virus: druhý hod (stealth), zda si ICE útoku všimne. */
+    virusNoticeBase: 10,
+    /** Silence a Smoke: base + 3×rating − (stealth + program); selže jen kritickým selháním; trvání 2 + 2×úspěch. */
+    nodeProgramBase: 10,
+    nodeProgramSysMult: 3,
+    nodeProgramMinTurns: 2,
+    nodeProgramTurnsPerSuccess: 2,
+    /** Decoy: base + 3×rating − (stealth + program); počet návnad = úspěch, nejvýš 5. */
+    decoyBase: 8,
+    decoySysMult: 3,
+    /** Medic: base + 3×rating − (program + defense); léčí 4 × úspěch, program při každém úspěchu ztratí 1 rating. */
+    medicBase: 8,
+    medicSysMult: 3,
+    medicHealPerSuccess: 4,
+    /** Klientský program: běží clientProgramBaseTurns + rating / 2 tahů. */
+    clientProgramBaseTurns: 6,
+    /** Scan/Evaluate: rychlost = scanMpPerRating × rating MP za tah. */
+    scanMpPerRating: 5,
+    /** Úprava souboru je editSpeedDivisor× rychlejší než stažení. */
+    editSpeedDivisor: 2,
+
+    /** Akce v nodech. */
+    useIoAlarmChanceDie: 3,
+    crashBase: 10,
+    backdoorBase: 12,
+    killAlarmBase: 10,
+    killShutdownBase: 8,
+    killTraceBase: 10,
+
+    /** ICE útočí: cíl = attackIceBase − (2×rating systému + boj ICE) + (defense + armor). */
+    iceAttackBase: 10,
+    dataBombBase: 6,
+    /** Reflect: 20 % poškození za stupeň úspěchu (dělitel 5). */
+    reflectDivisor: 5,
+    /** Crash ICE: šance na zhroucení programu = poškození / crashProgramChanceDie. */
+    crashProgramChanceDie: 10,
+    /** Trace: doba = traceTimeBase − traceTimePerSuccess × úspěch; −1 k cíli za každé další trace ICE v nodu. */
+    traceTimeBase: 12,
+    traceTimePerSuccess: 2,
+    /** Zmatené ICE: hod na sebepoškození proti 10, šance 1/4 zrušit trace, 5 možných akcí. */
+    confusedSelfDamageTarget: 10,
+    confusedCancelTraceChanceDie: 4,
+    confusedActionDie: 5,
+    /** ICE proti ICE (zmatené útočné ICE). */
+    iceVsIceBase: 10,
+
+    /** Vypnutí systému při červeném alarmu: šance rating / shutdownChanceDie za tah, odpočet 15 × počet oblastí. */
+    shutdownChanceDie: 1000,
+    shutdownTurnsPerArea: 15,
+    /** Obnova zničených ICE: (reactivateBase − rating/4) + náhodná část kontroly (red: 21 − rating, jinak 31 − rating). */
+    reactivateBase: 10,
+    reactivateRedScan: 21,
+    reactivateNormalScan: 31,
+
+    /**
+     * Chyba 1.12 v CIce::DoQuery: při rušení nižších dotazů se stav bílého ICE nastaví dotazujícímu ICE
+     * místo tomu nižšímu. false = chování originálu.
+     */
+    fixQueryStateBug: false,
+  },
+
+  /** Konec runu (DoDumpDecker, GetContractStatus). Kuchařka: kapitola 12. */
+  runResult: {
+    /** Po dokončeném trace: policie s šancí random(10) ≤ korporace / 5 (10 % za úroveň systému). */
+    policeCorpDivisor: 5,
+    policeChanceDie: 10,
+    /** Trace & Fry: hod 10 − boj ICE + (čip + Surge Suppressor); úspěch sníží rating čipu. */
+    fryBase: 10,
+    /** Body dovedností = obtížnost, snížené podle toho, o kolik je efektivní úroveň vyšší (0, 1, 2, 3, 4+). */
+    skillPointPercentByLevelGap: [100, 75, 50, 25, 0],
+    /** Ztráta reputace: neúspěch = obtížnost, nedokončeno = obtížnost / 2. */
+    incompleteRepDivisor: 2,
+    /** Pohotovost korporace po runu (dny): žlutý alarm ⌈rating/5⌉ + 1, červený 7 × ⌈rating/5⌉ + 1. */
+    yellowAlertDaysPerFive: 1,
+    redAlertDaysPerFive: 7,
+    /** Po runu uplyne tolik dní. */
+    daysAfterRun: 1,
+  },
+
   /** Node.cpp CreateFileList, DSFile.cpp Generate */
   files: {
     /** Počet souborů v datastoru = countBase + random2(countDice, countDie). */

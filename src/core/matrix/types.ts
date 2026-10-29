@@ -47,7 +47,8 @@ export interface Area {
   spuId: number;
   portalInId: number | null;
   portalOutId: number;
-  iceIoNodeId: number;
+  /** ICE port oblasti; null = port uzavřen hráčem (ICE se v oblasti neobnovuje). */
+  iceIoNodeId: number | null;
   highSpeedIoNodeId: number | null;
   sizeX: number;
   sizeY: number;
@@ -93,8 +94,11 @@ export interface MatrixSystem {
   alert: Alert;
   areas: Area[];
   nodes: MNode[];
+  /** Všechna ICE podle id (i zničená – záznam zůstává kvůli odkazům). */
   ice: Ice[];
-  /** Id zničených ICE (originál m_olDeadIceList). */
+  /** Aktivní ICE v pořadí originálu (m_olIceList) – na pořadí záleží (dotazy, tahy). */
+  iceList: number[];
+  /** Zničená ICE čekající na obnovu (originál m_olDeadIceList). */
   deadIce: number[];
   cpuNodeId: number;
   portalOutNodeId: number;

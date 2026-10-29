@@ -16,13 +16,15 @@ Odchylky remasteru od originálu (opravy chyb, nové funkce) jsou v textu vždy 
 | [1. Kostky a úspěch](01-kostky-a-uspech.md) | hotovo (fáze 1) |
 | [2. Postava a deck](02-postava.md) | hotovo (fáze 2) |
 | [3. Čas, lifestyle a léčení](03-cas-a-lifestyle.md) | hotovo (fáze 2) |
-| [4. Programy – cena, velikost, názvy](04-programy.md) | hotovo (fáze 2); účinky v Matrixu – fáze 5 |
+| [4. Programy – cena, velikost, názvy](04-programy.md) | hotovo (fáze 2) |
 | [5. Obchod a objednávky](05-obchod.md) | hotovo (fáze 2) |
-| [6. Kontrakty a odměny](06-kontrakty.md) | generování hotovo (fáze 2); vyhodnocení mise – fáze 5 |
+| [6. Kontrakty a odměny](06-kontrakty.md) | hotovo (fáze 2) |
 | [7. Projekty](07-projekty.md) | hotovo (fáze 2) |
 | [8. Generování systému](08-generovani-systemu.md) | hotovo (fáze 2) |
-| [9. ICE – generování a ratingy](09-ice.md) | hotovo (fáze 2); chování v Matrixu – fáze 5 |
-| Matrix (tah, alarmy, trace, download) | fáze 5 |
+| [9. ICE – generování a ratingy](09-ice.md) | hotovo (fáze 2) |
+| [10. Matrix: tah, pohyb, alarmy, ICE](10-matrix.md) | hotovo (fáze 5) |
+| [11. Programy a akce v Matrixu](11-programy-v-matrixu.md) | hotovo (fáze 5) |
+| [12. Konec runu a odměny](12-konec-runu.md) | hotovo (fáze 5) |
 
 ## Souhrn odchylek od 1.12
 
@@ -36,4 +38,7 @@ Odchylky remasteru od originálu (opravy chyb, nové funkce) jsou v textu vždy 
 | překlad programu | „odnahrát staré“ zahrne i poslední program v seznamu | chyba ve smyčce originálu |
 | typ ICE | Attack (Crash) má po analýze správný název | originál četl mimo tabulku |
 | kontrakty | **nové**: zrušení přijatého kontraktu za ztrátu reputace | To-Do originálu |
+| dotazy ICE | chyba DoQuery (stav nastaven sobě místo nižšímu ICE) **zachována**, oprava `matrix.fixQueryStateBug` | věrnost originálu |
+| tahy ICE | ICE zničené během tahu jiného ICE už v tomtéž tahu nejedná | originál tu mohl spadnout (neplatný ukazatel) |
+| smrt | konec hry a návrat na úvod místo ukončení programu | originál zavřel hru bez uložení |
 | generátor náhody | sfc32 místo `rand()`, stav v savu | rozdělení stejné, posloupnost ne |

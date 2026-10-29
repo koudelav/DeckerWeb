@@ -20,7 +20,11 @@ export function isEmptyLocation(sys: MatrixSystem, node: MNode, x: number, y: nu
     if (player.x === x && player.y === y) return false;
     if (player.decoys.some((d) => d.x === x && d.y === y)) return false;
   }
-  return !sys.ice.some((i) => i.nodeId === node.id && i.x === x && i.y === y);
+  for (const id of sys.iceList) {
+    const i = sys.ice[id]!;
+    if (i.nodeId === node.id && i.x === x && i.y === y) return false;
+  }
+  return true;
 }
 
 function freeCell(sys: MatrixSystem, node: MNode, x: number, y: number, player?: PlayerPresence): boolean {

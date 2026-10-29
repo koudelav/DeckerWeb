@@ -55,7 +55,7 @@ function checkInvariants(sys: MatrixSystem, c: Contract) {
     for (const n of nodes) expect(dist.get(n.id)).toBeLessThan(255);
     expect(sys.nodes[area.portalOutId]!.type).toBe(NodeType.PortalOut);
     if (ai > 0) expect(sys.nodes[area.portalInId!]!.type).toBe(NodeType.PortalIn);
-    expect(sys.nodes[area.iceIoNodeId]!.subType).toBe(NodeSubtype.IoIcePort);
+    expect(sys.nodes[area.iceIoNodeId!]!.subType).toBe(NodeSubtype.IoIcePort);
     expect(nodes.some((n) => n.type === NodeType.Cop && n.subType === NodeSubtype.CopSecurity)).toBe(true);
   });
   expect(sys.areas[0]!.nodeIds.some((id) => sys.nodes[id]!.type === NodeType.IO && sys.nodes[id]!.subType === NodeSubtype.IoAlarm)).toBe(true);

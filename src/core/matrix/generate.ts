@@ -40,6 +40,7 @@ export function generateSystem(ctx: Ctx, contract: Contract, opts: GenerateOptio
     areas: [],
     nodes: [],
     ice: [],
+    iceList: [],
     deadIce: [],
     cpuNodeId: -1,
     portalOutNodeId: -1,
@@ -536,6 +537,7 @@ function generateNodeIce(g: Gen, node: MNode): void {
     ice.x = p.x;
     ice.y = p.y;
     sys.ice.push(ice);
+    sys.iceList.push(ice.id);
   }
 
   if (node.type === NodeType.Junction) return;
@@ -615,6 +617,7 @@ function generateNodeIce(g: Gen, node: MNode): void {
     ice.x = loc.x;
     ice.y = loc.y;
     sys.ice.push(ice);
+    sys.iceList.push(ice.id);
   }
 
   // Tapewormy hlídající soubory
@@ -637,6 +640,7 @@ function generateNodeIce(g: Gen, node: MNode): void {
       tw.y = loc.y;
       file.tapewormId = tw.id;
       sys.ice.push(tw);
+      sys.iceList.push(tw.id);
     }
   }
 }
