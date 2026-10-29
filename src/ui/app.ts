@@ -8,9 +8,10 @@ import { confirmDialog, message } from "./modal";
 import { renderHome } from "./views/home";
 import { renderIntro } from "./views/intro";
 import { renderNewCharacter } from "./views/newchar";
+import { renderMatrixScreen } from "./matrix/screen";
 
 export type View = "character" | "deck" | "contracts" | "shop" | "projects" | "rest" | "matrix" | "options";
-export type Screen = "intro" | "newChar" | "home";
+export type Screen = "intro" | "newChar" | "home" | "matrix";
 
 export interface App {
   screen: Screen;
@@ -26,6 +27,8 @@ export interface App {
   act(fn: () => void | string | Promise<void | string>): Promise<void>;
   /** Zobrazí události z plynutí času (nájem, nový týden, hotový čip…). Vrací false při konci hry. */
   handleTime(result: PassTimeResult): Promise<boolean>;
+  /** Automatické uložení (po každé akci). */
+  save(): void;
 }
 
 const root = () => document.querySelector<HTMLDivElement>("#app")!;
@@ -43,7 +46,8 @@ export function createApp(): App {
       r.replaceChildren(
         app.screen === "intro" ? renderIntro(app)
           : app.screen === "newChar" ? renderNewCharacter(app)
-            : renderHome(app),
+            : app.screen === "matrix" && app.game?.run ? renderMatrixScreen(app)
+              : renderHome(app),
       );
       if (focusKey) r.querySelector<HTMLElement>(`[data-focus="${focusKey}"]`)?.focus();
       window.scrollTo({ top: scrollY });
@@ -61,7 +65,7 @@ export function createApp(): App {
       app.game = game;
       app.ui = {};
       app.view = "character";
-      app.screen = "home";
+      app.screen = game.run ? "matrix" : "home";
       autosave(app);
       app.render();
     },
@@ -74,6 +78,9 @@ export function createApp(): App {
       }
       autosave(app);
       app.render();
+    },
+    save() {
+      autosave(app);
     },
     async handleTime(result) {
       for (const ev of result.events) await showEvent(app, ev);

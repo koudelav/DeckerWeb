@@ -42,3 +42,4 @@ Odchylky remasteru od originálu (opravy chyb, nové funkce) jsou v textu vždy 
 | tahy ICE | ICE zničené během tahu jiného ICE už v tomtéž tahu nejedná | originál tu mohl spadnout (neplatný ukazatel) |
 | smrt | konec hry a návrat na úvod místo ukončení programu | originál zavřel hru bez uložení |
 | generátor náhody | sfc32 místo `rand()`, stav v savu | rozdělení stejné, posloupnost ne |
+| Matrix UI | **nové**: panel stažených souborů a tlačítko „Wait for transfer“ (čeká, dokud přenos nedoběhne nebo se nic nestane) | To-Do originálu |
