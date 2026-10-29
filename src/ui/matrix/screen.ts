@@ -338,6 +338,15 @@ async function optionsDialog(app: App): Promise<void> {
 // Vykreslení
 // ---------------------------------------------------------------------------
 
+/** Ikony aktivních programů (ActiveBar originálu) s popiskem. */
+function activeChips(items: ({ cls: ProgramClass; label: string } | null)[], align: "start" | "center" = "start", empty = ""): HTMLElement {
+  const list = items.filter((x): x is { cls: ProgramClass; label: string } => x !== null);
+  return h("ul", { class: `achips ${align}` },
+    list.length === 0 && empty ? h("li", { class: "muted small" }, empty) : null,
+    list.map((x) => h("li", { class: "achip", title: x.label },
+      h("span", { class: "icon-tile" }, sprite(STRIPS.software, x.cls, 2)), h("span", null, x.label))));
+}
+
 function bar(label: string, value: number, max: number, cls: string, text?: string): HTMLElement {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return h("div", { class: "mbar" },
@@ -430,24 +439,29 @@ export function renderMatrixScreen(app: App): HTMLElement {
           h("strong", null, target.name),
           h("span", { class: "muted" }, iceTypeName(target)),
           bar("Health", target.health, max, "ok"),
-          h("span", { class: "mtarget-flags" },
-            [target.slowLevel && "Slowed", target.virusLevel && "Infected", target.confusionLevel && "Confused", target.weakenLevel && "Weakened", target.analyzed && `Analyzed ${target.analyzed * 20}%`, target.bypassed && "Deceived"]
-              .filter(Boolean).join(", ")),
+          activeChips([
+            target.slowLevel ? { cls: ProgramClass.Slow, label: "Slowed" } : null,
+            target.virusLevel ? { cls: ProgramClass.Virus, label: "Infected" } : null,
+            target.confusionLevel ? { cls: ProgramClass.Confuse, label: "Confused" } : null,
+            target.weakenLevel ? { cls: ProgramClass.Weaken, label: "Weakened" } : null,
+            target.analyzed ? { cls: ProgramClass.Analyze, label: `Analyzed ${target.analyzed * 20}%` } : null,
+            target.bypassed ? { cls: ProgramClass.Deceive, label: "Deceived" } : null,
+          ]),
         ),
       ]
       : h("span", { class: "muted" }, s.currentIce.length ? "Click an ICE or press Tab to target it." : "No ICE in this node."),
   );
 
-  const nodeFlags = [
-    node.silenceLevel ? `Silenced ${node.silenceLevel}` : null,
-    node.smokeLevel ? `Smoke ${node.smokeLevel}` : null,
-    run.activeScan ? `${run.activeScan.cls === ProgramClass.Scan ? "Scanning" : "Evaluating"}` : null,
-    s.clientProgramStatus ? `Client program ${s.clientProgramStatus - 1}` : null,
-  ].filter(Boolean) as string[];
+  const nodeFlags = activeChips([
+    node.silenceLevel ? { cls: ProgramClass.Silence, label: `Silence ${node.silenceLevel}` } : null,
+    node.smokeLevel ? { cls: ProgramClass.Smoke, label: `Smoke ${node.smokeLevel}` } : null,
+    run.activeScan ? { cls: run.activeScan.cls, label: run.activeScan.cls === ProgramClass.Scan ? "Scanning" : "Evaluating" } : null,
+    s.clientProgramStatus ? { cls: ProgramClass.Client, label: `Client program ${s.clientProgramStatus - 1}` } : null,
+  ], "center");
 
   const center = h("section", { class: "mpanel mcenter", "aria-label": "Node" },
     renderNodeView(run, ch.image, ui.fx, (id) => { run.setTarget(id); app.render(); }),
-    h("div", { class: "mnode-flags" }, nodeFlags.join(", ")),
+    h("div", { class: "mnode-flags", "aria-label": "Active in this node" }, nodeFlags),
     targetPanel,
   );
 
@@ -467,10 +481,16 @@ export function renderMatrixScreen(app: App): HTMLElement {
       ? bar("Trace", s.traceIceId !== null ? s.traceTurnsLeft : 0, s.traceInitialTime || 1, "bad", s.traceIceId !== null ? `${s.traceTurnsLeft} turns${s.traceType !== TraceSubtype.Normal ? " (dump)" : ""}` : s.traced ? "traced" : "none")
       : h("p", { class: "muted small" }, "A Trace Monitor shows trace progress."),
     transferName ? h("p", { class: "small" }, `Transferring ${transferName}`) : null,
-    h("p", { class: "mactive small" }, "Active: ",
-      [run.activeArmor && `Armor ${run.activeArmor.loadedRating}`, run.activeHide && "Hide", run.activeReflect && "Reflect",
-        run.activeBoost && programClassName(run.activeBoost.cls), s.decoys.length && `${s.decoys.length} decoys`]
-        .filter(Boolean).join(", ") || "none"),
+    h("div", { class: "mactive" },
+      h("span", { class: "mbar-label" }, "Active"),
+      activeChips([
+        run.activeArmor ? { cls: ProgramClass.Armor, label: `Armor ${run.activeArmor.loadedRating}` } : null,
+        run.activeShield ? { cls: ProgramClass.Shield, label: `Shield ${run.activeShield.loadedRating}` } : null,
+        run.activeHide ? { cls: ProgramClass.Hide, label: `Hide ${run.activeHide.loadedRating}` } : null,
+        run.activeReflect ? { cls: ProgramClass.Reflect, label: `Reflect ${run.activeReflect.loadedRating}` } : null,
+        run.activeBoost ? { cls: run.activeBoost.cls, label: `${programClassName(run.activeBoost.cls)} ${run.activeBoost.loadedRating}` } : null,
+        s.decoys.length ? { cls: ProgramClass.Decoy, label: `${s.decoys.length} decoy${s.decoys.length > 1 ? "s" : ""}` } : null,
+      ], "start", "none")),
   );
 
   // Ovládání
