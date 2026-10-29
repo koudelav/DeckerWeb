@@ -59,7 +59,7 @@ export function renderHome(app: App): HTMLElement {
     h("dl", { class: "readout-stats" },
       h("div", { class: "stat stat-credits" }, h("dt", null, "Credits"), h("dd", null, credits(ch.credits))),
       h("div", { class: "stat" }, h("dt", null, "Lifestyle"), h("dd", null, lifestyleName(ch.lifestyle))),
-      h("div", { class: "stat" }, h("dt", null, "Reputation"), h("dd", null, REP_LEVEL_NAMES[ch.repLevel], atCap ? " (max)" : "")),
+      h("div", { class: "stat" }, h("dt", null, "Reputation"), h("dd", null, `${REP_LEVEL_NAMES[ch.repLevel]} (${ch.repLevel}${atCap ? ", max" : ""})`)),
       h("div", { class: "stat" },
         h("dt", null, "Health"),
         h("dd", null,
