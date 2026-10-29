@@ -28,7 +28,7 @@ export function iconSelect(opts: {
     "aria-selected": o.value === current.value ? "true" : "false",
     "data-value": o.value,
     onclick: () => choose(o.value),
-  }, o.icon(), h("span", null, o.text)));
+  }, h("span", { class: "iselect-icon" }, o.icon()), h("span", null, o.text)));
   const list = h("ul", { class: "iselect-list", role: "listbox", id: listId, "aria-labelledby": labelId, tabindex: -1, hidden: true }, items);
   const button = h("button", {
     type: "button",
@@ -44,7 +44,7 @@ export function iconSelect(opts: {
         open();
       }
     },
-  }, current.icon(), h("span", { id: `${opts.focusKey}-value` }, current.text), h("span", { class: "iselect-caret", "aria-hidden": "true" }, "▾"));
+  }, h("span", { class: "iselect-icon" }, current.icon()), h("span", { id: `${opts.focusKey}-value` }, current.text), h("span", { class: "iselect-caret", "aria-hidden": "true" }, "▾"));
 
   let active = Math.max(0, opts.options.indexOf(current));
   const setActive = (i: number) => {

@@ -74,8 +74,8 @@ function renderNewProject(app: App): HTMLElement {
       iconSelect({
         label: "Type", value: d.type, focusKey: "proj-type",
         options: [
-          { value: ItemType.Software, text: "Program", icon: () => sprite(STRIPS.items, ItemType.Software, 1) },
-          { value: ItemType.Chip, text: "Chip", icon: () => sprite(STRIPS.items, ItemType.Chip, 1) },
+          { value: ItemType.Software, text: "Program", icon: () => sprite(STRIPS.items, ItemType.Software, 2) },
+          { value: ItemType.Chip, text: "Chip", icon: () => sprite(STRIPS.items, ItemType.Chip, 2) },
         ],
         onChange: (v) => { d.type = v as ProjectType; d.cls = 0; d.rating = maxProjectRating(ch, d.type); app.render(); },
       }),
@@ -83,7 +83,7 @@ function renderNewProject(app: App): HTMLElement {
         label: "Class", value: d.cls, focusKey: "proj-cls",
         options: projectClasses(d.type).map((c) => ({
           value: c, text: name(c),
-          icon: () => d.type === ItemType.Software ? sprite(STRIPS.software, c, 1) : sprite(STRIPS.items, ItemType.Chip, 1),
+          icon: () => d.type === ItemType.Software ? sprite(STRIPS.software, c, 2) : sprite(STRIPS.items, ItemType.Chip, 2),
         })),
         onChange: (v) => { d.cls = v; app.render(); },
       }),
